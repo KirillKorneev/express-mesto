@@ -17,7 +17,7 @@ router.get('/users/:id', (req, res) => {
   })
   .then((user) => {
     if (!user) {
-      return res.status(404).send({ message: 'Такого пользователя не существует' });
+      return res.status(404).send({ message: "Нет пользователя с таким id" });
     }
     res.send(user);
   });
