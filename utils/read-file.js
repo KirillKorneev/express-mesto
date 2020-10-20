@@ -1,9 +1,4 @@
 const fsPromises = require('fs').promises;
 
-module.exports = (pathUrl) => {
-  return fsPromises.readFile(pathUrl, {encoding: 'utf8'})
-  .then(file => {
-    return JSON.parse(file);
-  })
-  .catch(err => res.status(500).send({message: "Ошибка чтения"}));
-};
+module.exports = (pathUrl) => fsPromises.readFile(pathUrl, { encoding: 'utf8' })
+  .then((file) => JSON.parse(file));

@@ -1,4 +1,5 @@
 const express = require('express');
+
 const app = express();
 const PORT = 3000;
 const path = require('path');
@@ -9,7 +10,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', userRoutes);
 app.use('/', cardsRoutes);
 app.use('*', (req, res) => {
-  res.send({ message: "Запрашиваемый ресурс не найден" })
+  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 });
 
 app.listen(PORT, () => {
