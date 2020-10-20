@@ -8,6 +8,9 @@ const cardsRoutes = require('./routes/cards.js');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', userRoutes);
 app.use('/', cardsRoutes);
+app.use('*', (req, res) => {
+  res.send({ message: "Запрашиваемый ресурс не найден" })
+});
 
 app.listen(PORT, () => {
   console.log(`server is running on port ${PORT}`);

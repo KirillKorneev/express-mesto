@@ -5,4 +5,5 @@ module.exports = (pathUrl) => {
   .then(file => {
     return JSON.parse(file);
   })
+  .catch(err => res.status(500).send({message: "Ошибка чтения"}));
 };
