@@ -1,28 +1,51 @@
 const router = require('express').Router();
-const path = require('path');
-const readMyFile = require('../utils/read-file.js');
 
-const usersDataPath = path.join(__dirname, '..', 'data', 'users.json');
+const User = require('../models/user.js');
 
 router.get('/users', (req, res) => {
-  readMyFile(usersDataPath)
-    .then((data) => res.send(data));
+  User.find({})
+  .then((data) => res.status(200).send(data))
+  .catch(err => res.status(400).send(err));
 });
 
 router.get('/users/:id', (req, res) => {
-  const { id } = req.params;
-  readMyFile(usersDataPath)
-    .then((data) => {
-      const user = data.find((per) => per._id === id);
-      return user;
-    })
-    .then((userPer) => {
-      if (!userPer) {
-        return res.status(404).send({ message: 'Нет пользователя с таким id' })
-          .catch(() => res.status(500).send({ message: 'Ошибка чтения' }));
-      }
-      return res.send(userPer);
-    });
+  User.findOne({ _id: req.params.id })
+  .then((userPer) => {
+    if (!userPer) {
+      return res.status(404).send({ message: 'Нет пользователя с таким id' })
+        .catch(() => res.status(500).send({ message: 'Ошибка чтения' }));
+    }
+    return res.status(200).send(userPer);
+  })
+  .catch((err) => res.status(400).send(err));
+});
+
+router.post('/users', (req, res) => {
+  User.create({...req.body})
+  .then((user) =>  {
+    res.status(200).send({data: user});
+  })
+  .catch(() => res.status(500).send({message: "Ошибка"}));
+});
+
+router.patch('/users/me', (req, res) => {
+  const { name, about } = req.body;
+  const { id } = req.user;
+  User.findOneAndUpdate({_id: id}, {name: name, about: about})
+  .then((user) =>  {
+    res.status(200).send({data: user});
+  })
+  .catch(() => res.status(500).send({message: "Ошибка"}));
+});
+
+router.patch('/users/me/avatar', (req, res) => {
+  const { avatar } = req.body;
+  const { id } = req.user;
+  User.findOneAndUpdate({_id: id}, {avatar: avatar})
+  .then((user) =>  {
+    res.status(200).send({data: user});
+  })
+  .catch(() => res.status(500).send({message: "Ошибка"}));
 });
 
 module.exports = router;

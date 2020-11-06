@@ -19,7 +19,8 @@
   },
   "homepage": "https://github.com/KirillKorneev/express-mesto#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "mongoose": "^5.10.12"
   },
   "devDependencies": {
     "eslint": "^7.11.0",
