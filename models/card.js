@@ -12,10 +12,10 @@ const cardSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(v) {
-        const regex = /https?:\/\/(?:[-\w]+\.)?([-\w]+)\.\w+(?:\.\w+)?\/?.*/gi;
-        return v === regex;
+        const regex = /^(https?:\/\/)?([\w-]{1,32}\.[\w-]{1,32})[^\s@]*$/;
+        return regex.test(v);
       },
-      message: 'Инвалидная ссылка на карточку',
+      message: 'Инвалидная ссылка на аватар',
     },
   },
   owner: {

@@ -5,19 +5,29 @@ const User = require('../models/user.js');
 router.get('/users', (req, res) => {
   User.find({})
     .then((data) => res.status(200).send(data))
-    .catch((err) => res.status(400).send(err));
+    .catch(() => res.status(500).send({ message: 'Ошибка чтения' }));
 });
 
 router.get('/users/:id', (req, res) => {
   User.findOne({ _id: req.params.id })
-    .then((userPer) => {
-      if (!userPer) {
-        return res.status(404).send({ message: 'Нет пользователя с таким id' })
-          .catch(() => res.status(500).send({ message: 'Ошибка чтения' }));
-      }
-      return res.status(200).send(userPer);
+    .orFail(() => {
+      const error = new Error('Нет пользователя с таким id');
+      error.statusCode = 404;
+      throw error;
     })
-    .catch((err) => res.status(400).send(err));
+    .then((userPer) => {
+      res.send(userPer);
+      return userPer;
+    })
+    .catch((err) => {
+      if (err.kind === undefined) {
+        res.status(err.statusCode).send({ message: err.message });
+      } else if (err.kind === 'ObjectId') {
+        res.status(400).send({ message: 'Неправильный id' });
+      } else {
+        res.status(500).send({ message: 'Ошибка на сервере' });
+      }
+    });
 });
 
 router.post('/users', (req, res) => {
@@ -25,27 +35,55 @@ router.post('/users', (req, res) => {
     .then((user) => {
       res.status(200).send({ data: user });
     })
-    .catch(() => res.status(500).send({ message: 'Ошибка' }));
+    .catch(() => res.status(400).send({ message: 'Ошибка' }));
 });
 
 router.patch('/users/me', (req, res) => {
   const { name, about } = req.body;
   const { id } = req.user;
-  User.findOneAndUpdate({ _id: id }, { name, about })
+  const opts = { runValidators: true };
+  User.findOneAndUpdate({ _id: id }, { name, about }, opts)
+    .orFail(() => {
+      const error = new Error('Нет пользователя с таким id');
+      error.statusCode = 404;
+      throw error;
+    })
     .then((user) => {
       res.status(200).send({ data: user });
     })
-    .catch(() => res.status(500).send({ message: 'Ошибка' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Ошибка валидации' });
+      } else if (err.kind === 'ObjectId') {
+        res.status(400).send({ message: 'Неправильный id' });
+      } else {
+        res.status(err.statusCode).send({ message: err.message });
+      }
+    });
 });
 
 router.patch('/users/me/avatar', (req, res) => {
   const { avatar } = req.body;
   const { id } = req.user;
-  User.findOneAndUpdate({ _id: id }, { avatar })
+  const opts = { runValidators: true };
+  User.findOneAndUpdate({ _id: id }, { avatar }, opts)
+    .orFail(() => {
+      const error = new Error('Нет пользователя с таким id');
+      error.statusCode = 404;
+      throw error;
+    })
     .then((user) => {
       res.status(200).send({ data: user });
     })
-    .catch(() => res.status(500).send({ message: 'Ошибка' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Ошибка валидации' });
+      } else if (err.kind === 'ObjectId') {
+        res.status(400).send({ message: 'Неправильный id' });
+      } else {
+        res.status(err.statusCode).send({ message: err.message });
+      }
+    });
 });
 
 module.exports = router;

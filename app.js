@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 
 const app = express();
 const PORT = 3000;
-const path = require('path');
 const userRoutes = require('./routes/users.js');
 const cardsRoutes = require('./routes/cards.js');
 
@@ -16,12 +15,12 @@ const mongoConnectOptions = {
 
 mongoose.connect(mongoDbUrl, mongoConnectOptions);
 
+/// Это, наверное, было самое крутое ревью, спасибо и большой респект!!!
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 app.use((req, res, next) => {
   req.user = {
-    id: '5fa552630eeebf5bd0d73bc7', // вставьте сюда _id созданного в предыдущем пункте пользователя
+    id: '5fa552630eeebf5bd0d73bc7',
   };
 
   next();
@@ -35,7 +34,3 @@ app.use('*', (req, res) => {
 app.listen(PORT, () => {
   console.log(`server is running on port ${PORT}`);
 });
-
-// module.exports.createCard = (req, res) => {
-//  console.log(req.user._id); // _id станет доступен
-// };
