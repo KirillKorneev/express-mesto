@@ -1,4 +1,3 @@
-const router = require('express').Router();
 const Card = require('../models/card.js');
 
 const getCards = (req, res) => {
